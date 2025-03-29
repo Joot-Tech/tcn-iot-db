@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import logo from "../../assets/img/logo.JPG";
 import rlogo from "../../assets/img/responderLogo.JPG";
 //import socket from "../../utility/socketioConnection";
-import emergencyAlert from "../../assets/audio/emergency_alert.mp3";
+//import emergencyAlert from "../../assets/audio/emergency_alert.mp3";
 import $ from "jquery";
 import 'popper.js/dist/popper';
 import 'bootstrap/dist/js/bootstrap.bundle';
@@ -20,7 +20,7 @@ const DashboardNav = ({ body }) => {
   let [resAdd, setResAdd] = useState("");
   let [name, setName] = useState("");
   const route = history.location.pathname;
-  const audio = new Audio(emergencyAlert);
+  // const audio = new Audio(emergencyAlert);
 
   // function to display when the reply gets back
   const sosAlert =  function(data) {
@@ -34,7 +34,7 @@ const DashboardNav = ({ body }) => {
     setKIllnesses(user.knownIllnesses);
     setResAdd(user.residentialAdd);
     setName(user.name);
-    audio.play();
+    //audio.play();
     $("#myModal").modal({
       keyboard: true
     })
@@ -94,7 +94,7 @@ const DashboardNav = ({ body }) => {
             <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
             </div>
-            <button className="btn btn-success" onClick={() => audio.pause()}>
+            <button className="btn btn-success" onClick={() => {}}>
             Accept Alarms
           </button>
           </div>

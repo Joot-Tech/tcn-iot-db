@@ -3,6 +3,7 @@ import { Link, withRouter, Redirect } from 'react-router-dom';
 import socket from "./utility/socketIO";
 import get_stations from "./stations_adder";
 import DateTime from "./DateTime";
+import Modal from "./Modal";
 
 // import { Spinner, Button, Table } from "react-bootstrap";
 
@@ -10,8 +11,24 @@ import DateTime from "./DateTime";
    constructor(props) {
      super(props);
      this.toggleDisplay = this.toggleDisplay.bind(this);
+     this.setModalFalse = this.setModalFalse.bind(this);
+     this.setModalTrue = this.setModalTrue.bind(this);
      this.state = { 
       frequency: "",
+      markudi: {},
+      starPipe: {},
+      quantum: {},
+      kamSteel: {},
+      ikorodu1: {},
+      ikorodu2: {},
+      phoenix: {},
+      sagamu: {},
+      pulkitSteel: {},
+      africanFoundriesLimited: {},
+      sunflag: {},
+      topSteel: {},
+      monarch: {},
+      larfarge: {},
       afamIv_vPs: {},
       afamVPs: {},
       transamadiGs: {},
@@ -52,6 +69,8 @@ import DateTime from "./DateTime";
       message: "",
       received: [],
       connected: false,
+      ModalState: false,
+      modal_data: "TAOPEX",
       display: ''
      };
    }
@@ -59,8 +78,12 @@ import DateTime from "./DateTime";
     if(this.props.history.location.pathname === "/home") {
       socket.on("client_message_111", data => {
         const { message } = data;
-        const parsedMessage = JSON.parse(message);
-        const station = parsedMessage.id;
+        let parsedMessage = {};
+        try {
+          parsedMessage = JSON.parse(message);
+        } catch(e) {} 
+        parsedMessage.server_time = (new Date()).getTime();
+        const station = parsedMessage.name ? parsedMessage.name : parsedMessage.id ? parsedMessage.id : null;
         const returnObject = {}
         // console.log(parsedMessage, 'c1 message');
         this.setState(prevState => {
@@ -71,8 +94,12 @@ import DateTime from "./DateTime";
       });
       socket.on("client_message_222", data => {
         const { message } = data;
-        const parsedMessage = JSON.parse(message);
-        const station = parsedMessage.id;
+        let parsedMessage = {};
+        try {
+          parsedMessage = JSON.parse(message);
+        } catch(e) {} 
+        parsedMessage.server_time = (new Date()).getTime();
+        const station = parsedMessage.name ? parsedMessage.name : parsedMessage.id ? parsedMessage.id : null;
         const returnObject = {}
         // console.log(parsedMessage, 'c2 message');
         this.setState(prevState => {
@@ -81,9 +108,12 @@ import DateTime from "./DateTime";
           return returnObject;
         })
       });
-      socket.on("frequency000", data => {
+      socket.on("frequency001", data => {
         const { message } = data;
-        const parsedMessage = JSON.parse(message);
+        let parsedMessage;
+        try {
+          parsedMessage = JSON.parse(message);
+        } catch(e) { console(e) } 
         const returnObject = {}
         this.setState(prevState => {
           prevState["frequency"] = parsedMessage;
@@ -100,7 +130,7 @@ import DateTime from "./DateTime";
     })
    }
    getEpoch(time) {
-    if(!time || time == undefined || time == null) {
+    if(!time || time === undefined || time === null) {
       return 0;
     }
     // Convert the time input to epoch time
@@ -113,22 +143,22 @@ import DateTime from "./DateTime";
     const dateTemp = date.split('-');
     return new Date(Number(dateTemp[0]), Number(dateTemp[1]-1), Number(dateTemp[2]), Number(hour), Number(minute), Number(seconds)); 
    }
-   checkConnection2(time) {
+   checkConnection2(server_time) {
     const connected = <span className="text-success"> CN </span>
     const disconnected = <span className="text-danger"> NC </span>
-    if (time === undefined || time === null) {
+    if (server_time === undefined || server_time === null) {
       return disconnected
     }
     try {
       // Get current epoch time
       const time_now = (new Date()).getTime();     
-      // if 5 minutes have passed without the time changing from the current time then return disconnected
-      // 5 minutes equals to 300,000 milliseconds
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
       // if the time difference is greater than time_diff then return disconnected
-      const time_diff = (time_now - this.getEpoch(time)) > 300000;
-      if (time.length === 0 || time_diff ) {
+      const time_diff = (time_now - server_time) > 30000;
+      if (server_time.length === 0 || time_diff ) {
           return disconnected
-      } else if (time.length > 0) {
+      } else if (!isNaN(server_time)) {
           return connected
       }
     } catch(e) {
@@ -147,18 +177,16 @@ import DateTime from "./DateTime";
       t2 = t2 ? t2 : '';
       // Get current epoch time
       const time_now = (new Date()).getTime();
-      // if 5 minutes have passed without the time changing from the current time then return disconnected
-      // 5 minutes equals to 300,000 milliseconds
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
       // if the time difference is greater than time_diff then return disconnected
-      const time_diff_1 = (time_now - this.getEpoch(t1)) > 300000;
-      const time_diff_2 = (time_now - this.getEpoch(t2)) > 300000;
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
       if ( time_diff_1 || time_diff_2 ) {
         return disconnected
-      } else if (t1.length > 0 && t2.length > 0) {
+      } else if (!isNaN(t1) && !isNaN(t2)) {
           return connected
-      } else {
-        return disconnected;
-      }
+      } 
     } catch(e) {
       console.log(e);
       return disconnected;
@@ -176,31 +204,93 @@ import DateTime from "./DateTime";
       t3 = t3 ? t3 : '';
       // Get current epoch time
       const time_now = (new Date()).getTime();  
-      // if 5 minutes have passed without the time changing from the current time then return disconnected
-      // 5 minutes equals to 300,000 milliseconds
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
       // if the time difference is greater than time_diff then return disconnected
-      const time_diff_1 = (time_now - this.getEpoch(t1)) > 300000;
-      const time_diff_2 = (time_now - this.getEpoch(t2)) > 300000;
-      const time_diff_3 = (time_now - this.getEpoch(t3)) > 300000;
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
+      const time_diff_3 = (time_now - t3) > 30000;
       if ( time_diff_1 || time_diff_2 || time_diff_3 ) {
         return disconnected
-      } else if (t1.length > 0 && t2.length > 0 && t3.length > 0) {
+      } else if (!isNaN(t1) && !isNaN(t2) && !isNaN(t3)) {
           return connected
-      } else {
-        return disconnected;
       }
     } catch(e) {
       console.log(e);
       return disconnected;
     }    
    }
+   checkConnection3_b(t1, t2) {
+    const connected = <span className="text-success"> CN </span>
+    const disconnected = <span className="text-danger"> NC </span>
+    if ((t1 === undefined || t1 === null) && (t2 === undefined || t2 === null)) {
+      return disconnected
+    }
+    try {
+      t1 = t1 ? t1 : '';
+      t2 = t2 ? t2 : '';
+      // Get current epoch time
+      const time_now = (new Date()).getTime();
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
+      // if the time difference is greater than time_diff then return disconnected
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
+      if ( time_diff_1 && time_diff_2 ) {
+        return disconnected
+      } else if (!isNaN(t1) || !isNaN(t2)) {
+          return connected
+      } 
+    } catch(e) {
+      console.log(e);
+      return disconnected;
+    }    
+   }
+   checkConnection4_delta(t1, t2, t3) {
+    const connected = <span className="text-success"> CN </span>
+    const disconnected = <span className="text-danger"> NC </span>
+    if ((t1 === undefined || t1 === null) && (t2 === undefined || t2 === null) && (t3 === undefined || t3 === null)) {
+      return disconnected
+    }
+    try {
+      t1 = t1 ? t1 : '';
+      t2 = t2 ? t2 : '';
+      t3 = t3 ? t3 : '';
+      // Get current epoch time
+      const time_now = (new Date()).getTime();  
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
+      // if the time difference is greater than time_diff then return disconnected
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
+      const time_diff_3 = (time_now - t3) > 30000;
+      if (time_diff_1  && time_diff_3) {
+        return disconnected
+      } else if ( !isNaN(t1) || !isNaN(t3) ) {
+          return connected
+      }
+    } catch(e) {
+      console.log(e);
+      return disconnected;
+    }    
+   }
+   setModalTrue(e, station_name) {
+    // e.preventDefault();
+    //console.log(e.target.innerHTML, station_name);
+    return this.setState({ModalState: true, modal_data: station_name});
+   }
+   setModalFalse() {
+    this.setState({ModalState: false});
+   }
   render() {
     const { isLoggedIn } = this.props;
-    if (!isLoggedIn) {
-      return <Redirect to={'/'}/>
+    const token = localStorage.getItem("token");
+    if (!isLoggedIn || token === null) {
+      return <Redirect to={'/signin'}/>
     }
     const stations_array = get_stations(this.state);
     const olorunsogonipp_gs = stations_array['OLORUNSOGO NIPP'];
+    const markudi_ts = stations_array['MARKUDI TS'];
     const zungeru_gs = stations_array['ZUNGERU'];
     const taopex_gs = stations_array['TAOPEX'];
     const ihovbor_gs = stations_array['IHOVBOR NIPP (GAS)'];
@@ -224,7 +314,7 @@ import DateTime from "./DateTime";
     const omotosonipp_gs = stations_array['OMOTOSHO NIPP (GAS)'];
     const geregunipp_gs = stations_array['GEREGU NIPP (GAS)'];
     const azura_gs = stations_array['AZURA-EDO IPP (GAS)'];
-    const transamadi_gs = stations_array['TRANS-AMADI (GAS)'];
+    //const transamadi_gs = stations_array['TRANS-AMADI (GAS)'];
     const ibom_gs = stations_array['IBOM POWER (GAS)'];
     const gbarain_gs = stations_array['GBARAIN NIPP (GAS)'];
     const olorunsogogas_gs = stations_array['OLORUNSOGO (GAS)'];
@@ -275,6 +365,7 @@ import DateTime from "./DateTime";
     (Number(lokoja_ts.mw) < 0 ? 0 : Number(lokoja_ts.mw))+
     (Number(phMain_ts.mw) < 0 ? 0 : Number(phMain_ts.mw))+ 
     (Number(ikotekpene_ts.mw) < 0 ? 0 : Number(ikotekpene_ts.mw))+ 
+    (Number(markudi_ts.mw) < 0 ? 0 : Number(markudi_ts.mw))+ 
     (Number(eket_ts.mw) < 0 ? 0 : Number(eket_ts.mw));
         
     return (
@@ -312,7 +403,7 @@ import DateTime from "./DateTime";
           </ul>
           <div className="display-div">
             <h2 className="pb-0 mb-0"> <DateTime /></h2>
-            <h1 className="text-danger pt-0 mt-0"> Frequency:  { this.state.frequency } Hz</h1>
+            <h1 className="text-danger pt-0 mt-0"> Frequency:  {this.state.frequency.value ? this.state.frequency.value : ""}Hz</h1>
             <h2 className="text-danger">IoT POWER STATIONS TABLE</h2>
             <table className="tg">
               <thead>
@@ -325,206 +416,208 @@ import DateTime from "./DateTime";
                 </tr>
               </thead>
               <tbody>
-              <tr>
+              <tr onClick={(e) => { this.setModalTrue(e, ['RIVERS IPP (GAS)', this.state.riversIppPs]); }}>
                   <td>1</td>
                   <td>RIVERS IPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.riversIppPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.riversIppPs.server_time)}</td>
                   <td>{riversipp_gs.mw}</td>
                   <td>{riversipp_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['AFAM VI (GAS/STEAM)', this.state.afamViTs]); }}>
                   <td>2</td>
                   <td>AFAM VI (GAS/STEAM)</td>
-                  <td>{this.checkConnection2(this.state.afamViTs.t)}</td>
+                  <td>{this.checkConnection2(this.state.afamViTs.server_time)}</td>
                   <td>{afam6_gs.mw}</td>
                   <td>{afam6_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['GEREGU (GAS)', this.state.gereguPs]); }}>
                   <td>3</td>
                   <td>GEREGU (GAS)</td>
-                  <td>{this.checkConnection2(this.state.gereguPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.gereguPs.server_time)}</td>
                   <td>{geregugas_gs.mw}</td>
                   <td>{geregugas_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['OMOTOSHO (GAS)', this.state.omotosho2, this.state.omotosho1]); }}>
                   <td>4</td>
                   <td>OMOTOSHO (GAS)</td>
-                  <td>{this.checkConnection3(this.state.omotosho2.t, this.state.omotosho1.t)}</td>
+                  <td>{this.checkConnection3(this.state.omotosho2.server_time, this.state.omotosho1.server_time)}</td>
                   <td>{omotosogas_gs.mw}</td>
                   <td>{omotosogas_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['OMOTOSHO NIPP (GAS)', this.state.omotoshoNippPs]); }}>
                   <td>5</td>
                   <td>OMOTOSHO NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.omotoshoNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.omotoshoNippPs.server_time)}</td>
                   <td>{omotosonipp_gs.mw}</td>
                   <td>{omotosonipp_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['DELTA (GAS)', this.state.delta3, this.state.deltaGs, this.state.delta2]); }}>
                   <td>6</td>
                   <td>DELTA (GAS)</td>
-                  <td>{this.checkConnection4(this.state.delta2.t, this.state.delta3.t, this.state.deltaGs.t)}</td>
+                  <td>{this.checkConnection4_delta(this.state.delta3.server_time, this.state.deltaGs.server_time, this.state.delta2.server_time)}</td>
                   <td>{delta_gs.mw}</td>
                   <td>{delta_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['SAPELE NIPP (GAS)', this.state.sapeleNippPs]); }}>
                   <td>7</td>
                   <td>SAPELE NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.sapeleNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.sapeleNippPs.server_time)}</td>
                   <td>{sapelenipp_gs.mw}</td>
                   <td>{sapelenipp_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['OMOKU (GAS)', this.state.omokuPs1]); }}>
                   <td>8</td>
                   <td>OMOKU (GAS)</td>
-                  <td>{this.checkConnection2(this.state.omokuPs1.t)}</td>
+                  <td>{this.checkConnection2(this.state.omokuPs1.server_time)}</td>
                   <td>{omoku_gs.mw}</td>
                   <td>{omoku_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['AZURA-EDO IPP (GAS)', this.state.ihovborNippPs]); }}>
                   <td>9</td>
                   <td>AZURA-EDO IPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.ihovborNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.ihovborNippPs.server_time)}</td>
                   <td>{azura_gs.mw}</td>
                   <td>{azura_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['TRANS-AMADI (GAS)', this.state.phMain]); }}>
                   <td>10</td>
                   <td>TRANS-AMADI (GAS)</td>
-                  <td>{this.checkConnection2(this.state.phMain.t)}</td>
+                  <td>{this.checkConnection2(this.state.phMain.server_time)}</td>
                   <td>{phMain_ts.mw}</td>
                   <td>{phMain_ts.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['GEREGU NIPP (GAS)', this.state.gereguPs]); }}>
                   <td>11</td>
                   <td>GEREGU NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.gereguPs.t)}</td>
-                  <td>{geregunipp_gs.mw}</td>
+                  <td>{this.checkConnection2(this.state.gereguPs.server_time)}</td>
+                  {/* <td><span className="text-danger"> NC </span></td> */}
+                  <td>{Number(geregunipp_gs.mw) < 0 ? 0 : Number(geregunipp_gs.mw)}</td>
                   <td>{geregunipp_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['GBARAIN NIPP (GAS)', this.state.gbarain]); }}>
                   <td>12</td>
                   <td>GBARAIN NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.gbarain.t)}</td>
+                  <td>{true ? <span className="text-success"> CN </span> : this.checkConnection2(this.state.gbarain.server_time)}</td>
+                  {/* <td>{this.checkConnection2(this.state.gbarain.server_time)}</td> */}
                   <td>{gbarain_gs.mw}</td>
                   <td>{gbarain_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['DADINKOWA G.S (HYDRO)', this.state.dadinKowaGs]); }}>
                   <td>13</td>
                   <td>DADINKOWA G.S (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.dadinKowaGs.t)}</td>
+                  <td>{this.checkConnection2(this.state.dadinKowaGs.server_time)}</td>
                   <td>{dadinkowa_gs.mw}</td>
                   <td>{dadinkowa_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['PARAS ENERGY (GAS)', this.state.parasEnergyPs]); }}>
                   <td>14</td>
                   <td>PARAS ENERGY (GAS)</td>
-                  <td>{this.checkConnection2(this.state.parasEnergyPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.parasEnergyPs.server_time)}</td>
                   <td>{paras_gs.mw}</td>
                   <td>{paras_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['IBOM POWER (GAS)', this.state.eket, this.state.ekim]); }}>
                   <td>15</td>
                   <td>IBOM POWER (GAS)</td>
-                  <td>{this.checkConnection3(this.state.eket.t, this.state.ekim.t)}</td>
+                  <td>{this.checkConnection2(this.state.eket.server_time)}</td>
                   <td>{ibom_gs.mw}</td>
                   <td>{ibom_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['JEBBA (HYDRO)', this.state.jebbaTs]); }}>
                   <td>16</td>
                   <td>JEBBA (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.jebbaTs.t)}</td>
+                  <td>{this.checkConnection2(this.state.jebbaTs.server_time)}</td>
                   <td>{jebba_gs.mw}</td>
                   <td>{jebba_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['OLORUNSOGO (GAS)', this.state.olorunsogo1, this.state.olorunsogoPhase1Gs]); }}>
                   <td>17</td>
                   <td>OLORUNSOGO (GAS)</td>
-                  <td>{this.checkConnection3(this.state.olorunsogo1.t, this.state.olorunsogoPhase1Gs.t)}</td>
+                  <td>{this.checkConnection3(this.state.olorunsogo1.server_time, this.state.olorunsogoPhase1Gs.server_time)}</td>
                   <td>{olorunsogogas_gs.mw}</td>
                   <td>{olorunsogogas_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['OLORUNSOGO NIPP', this.state.olorunsogo1, this.state.olorunsogoPhase1Gs]); }}>
                   <td>18</td>
                   <td>OLORUNSOGO NIPP</td>
-                  <td>{this.checkConnection3(this.state.olorunsogo1.t, this.state.olorunsogoPhase1Gs.t)}</td>
+                  <td>{this.checkConnection3(this.state.olorunsogo1.server_time, this.state.olorunsogoPhase1Gs.server_time)}</td>
                   <td>{Number(olorunsogonipp_gs.mw) <= -3 ? 0 : Number(olorunsogonipp_gs.mw)}</td>
                   <td>{olorunsogonipp_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['SAPELE (STEAM)', this.state.sapeleNippPs]); }}>
                   <td>19</td>
                   <td>SAPELE (STEAM)</td>
-                  <td>{this.checkConnection2(this.state.sapeleNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.sapeleNippPs.server_time)}</td>
                   <td>{sapelesteam_gs.mw}</td>
                   <td>{sapelesteam_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['ODUKPANI NIPP (GAS)', this.state.odukpaniNippPs]); }}>
                   <td>20</td>
                   <td>ODUKPANI NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.odukpaniNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.odukpaniNippPs.server_time)}</td>
                   <td>{odukpani_gs.mw}</td>
                   <td>{odukpani_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['ALAOJI NIPP (GAS)', this.state.alaoji]); }}>
                   <td>21</td>
                   <td>ALAOJI NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.alaoji.t)}</td>
+                  <td>{this.checkConnection2(this.state.alaoji.server_time)}</td>
                   <td>{alaoji_gs.mw}</td>
                   <td>{alaoji_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['IHOVBOR NIPP (GAS)', this.state.ihovborNippPs]); }}>
                   <td>22</td>
                   <td>IHOVBOR NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.ihovborNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.ihovborNippPs.server_time)}</td>
                   <td>{ihovbor_gs.mw}</td>
                   <td>{ihovbor_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['SHIRORO (HYDRO)', this.state.shiroroPs]); }}>
                   <td>23</td>
                   <td>SHIRORO (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.shiroroPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.shiroroPs.server_time)}</td>
                   <td>{shiroro_gs.mw}</td>
                   <td>{shiroro_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['AFAM IV & V (GAS)', this.state.afamVPs, this.state.afamIv_vPs]); }}>
                   <td>24</td>
                   <td>{'AFAM IV & V (GAS)'}</td>
-                  <td>{this.checkConnection3(this.state.afamVPs.t, this.state.afamIv_vPs.t)}</td>
+                  <td>{this.checkConnection3_b(this.state.afamVPs.server_time, this.state.afamIv_vPs.server_time)}</td>
                   <td>{afam4_gs.mw}</td>
                   <td>{afam4_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['KAINJI (HYDRO)', this.state.kainjiTs]); }}>
                   <td>25</td>
                   <td>KAINJI (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.kainjiTs.t)}</td>
+                  <td>{this.checkConnection2(this.state.kainjiTs.server_time)}</td>
                   <td>{kainji_gs.mw}</td>
                   <td>{kainji_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['EGBIN (STEAM)', this.state.egbinPs]); }}>
                   <td>26</td>
                   <td>EGBIN (STEAM)</td>
-                  <td>{this.checkConnection2(this.state.egbinPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.egbinPs.server_time)}</td>
                   <td>{egbin_gs.mw}</td>
                   <td>{egbin_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['OKPAI (GAS/STEAM)', this.state.okpaiGs]); }}>
                   <td>27</td>
                   <td>OKPAI (GAS/STEAM)</td>
-                  <td>{this.checkConnection2(this.state.okpaiGs.t)}</td>
+                  <td>{this.checkConnection2(this.state.okpaiGs.server_time)}</td>
                   <td>{okpai_gs.mw}</td>
                   <td>{okpai_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['ZUNGERU G.S', this.state.zungeru]); }}>
                   <td>28</td>
                   <td>ZUNGERU G.S</td>
-                  <td>{this.checkConnection2(this.state.zungeru.t)}</td>
+                  <td>{this.checkConnection2(this.state.zungeru.server_time)}</td>
                   <td>{zungeru_gs.mw}</td>
                   <td>{zungeru_gs.kv}</td>
                 </tr>
-                <tr>
+                <tr onClick={(e) => { this.setModalTrue(e, ['TAOPEX G.S', this.state.taopex]); }}>
                   <td>29</td>
                   <td>TAOPEX G.S</td>
-                  <td>{this.checkConnection2(this.state.taopex.t)}</td>
+                  <td>{this.checkConnection2(this.state.taopex.server_time)}</td>
                   <td>{taopex_gs.mw}</td>
                   <td>{taopex_gs.kv}</td>
                 </tr>
@@ -551,59 +644,66 @@ import DateTime from "./DateTime";
                 </tr>
               </thead>
                 <tbody>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['IKOT EKPENE TS', this.state.ikotEkpene]); }}>
                     <td>101</td>
                     <td>IKOT EKPENE TS</td>
-                    <td>{this.checkConnection2(this.state.ikotEkpene.t)}</td>
+                    <td>{this.checkConnection2(this.state.ikotEkpene.server_time)}</td>
                     <td>{ikotekpene_ts.mw}</td>
                     <td>{ikotekpene_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['GWAGWALADA TS', this.state.gwagwalada]); }}>
                     <td>102</td>
                     <td>GWAGWALADA TS</td>
-                    <td>{this.checkConnection2(this.state.gwagwalada.t)}</td>
+                    <td>{this.checkConnection2(this.state.gwagwalada.server_time)}</td>
                     <td>{gwagwalada_ts.mw}</td>
                     <td>{gwagwalada_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['LOKOJA TS', this.state.lokojaTs]); }}>
                     <td>103</td>
                     <td>LOKOJA TS</td>
-                    <td>{this.checkConnection2(this.state.lokojaTs.t)}</td>
+                    <td>{this.checkConnection2(this.state.lokojaTs.server_time)}</td>
                     <td>{lokoja_ts.mw}</td>
                     <td>{lokoja_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['ASABA TS', this.state.asaba]); }}>
                     <td>104</td>
                     <td>ASABA TS</td>
-                    <td>{this.checkConnection2(this.state.asaba.t)}</td>
+                    <td>{this.checkConnection2(this.state.asaba.server_time)}</td>
                     <td>{asaba_ts.mw}</td>
                     <td>{asaba_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['UGWAJI TS', this.state.ugwuaji]); }}>
                     <td>105</td>
                     <td>UGWAJI TS</td>
-                    <td>{this.checkConnection2(this.state.ugwuaji.t)}</td>
+                    <td>{this.checkConnection2(this.state.ugwuaji.server_time)}</td>
                     <td>{ugwuaji_ts.mw}</td>
                     <td>{ugwuaji_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['MARKUDI TS', this.state.markudi]); }}>
+                    <td>106</td>
+                    <td>MARKUDI TS</td>
+                    <td>{this.checkConnection2(this.state.markudi.server_time)}</td>
+                    <td>{markudi_ts.mw}</td>
+                    <td>{markudi_ts.kv}</td>
+                  </tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['EKIM TS', this.state.ekim]); }}>
                     <td>107</td>
                     <td>EKIM TS</td>
-                    <td>{this.checkConnection2(this.state.ekim.t)}</td>
+                    <td>{this.checkConnection2(this.state.ekim.server_time)}</td>
                     <td>{ekim_ts.mw}</td>
                     <td>{ekim_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['PORTHARCOURT MAIN TS', this.state.phMain]); }}>
                     <td>108</td>
                     <td>PORTHARCOURT MAIN TS</td>
-                    <td>{this.checkConnection2(this.state.phMain.t)}</td>
+                    <td>{this.checkConnection2(this.state.phMain.server_time)}</td>
                     <td>{phMain_ts.mw}</td>
                     <td>{phMain_ts.kv}</td>
                   </tr>
-                  <tr>
+                  <tr onClick={(e) => { this.setModalTrue(e, ['EKET TS', this.state.eket]); }}>
                     <td>109</td>
                     <td>EKET TS</td>
-                    <td>{this.checkConnection2(this.state.eket.t)}</td>
+                    <td>{this.checkConnection2(this.state.eket.server_time)}</td>
                     <td>{eket_ts.mw}</td>
                     <td>{eket_ts.kv}</td>
                   </tr>              
@@ -620,7 +720,8 @@ import DateTime from "./DateTime";
           <div className="counter-div">
 
           </div>
-        </div>              
+        </div>
+        {this.state.ModalState && <Modal setModalFalse={this.setModalFalse} modalData={this.state.modal_data} />}
       </div>
     </>
     )         

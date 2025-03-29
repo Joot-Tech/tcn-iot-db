@@ -1,4 +1,5 @@
 import React from "react";
+import {Redirect} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import Text from "../../components/Inputs/Text";
 import Button from "../../components/Inputs/Button";
@@ -46,6 +47,7 @@ class SignIn extends React.Component {
       if (response.data === 'new') {
         this.props.history.push({pathname: `/updatepassword?email=${email}`});
       } else if (response.status === "Success") {
+        // console.log(response, "  the signin response");
         // console.log(response.data.isLoggedIn, 'islogged in from the server')
         const token = response.data.token ? response.data.token : null;
         const isLoggedIn = response.data.isLoggedIn ? response.data.isLoggedIn : false;
@@ -60,6 +62,7 @@ class SignIn extends React.Component {
         // this.props.history.push({pathname: `/changePassword`});
         // console.log('it returned success', token);
         //If this is not the first login Redirect to home page
+        return <Redirect to={'/home'}/>
         return this.props.history.push({pathname: `/home`});
       } else if (response.status === "Error") {
         this.setEmail("User Email");

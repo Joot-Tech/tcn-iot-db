@@ -1,4 +1,5 @@
 import React from "react";
+import {Redirect} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import socket from "./utility/socketIO";
 import get_stations from "./stations_adder";
@@ -6,8 +7,21 @@ import get_stations from "./stations_adder";
  class PageTwo extends React.Component {
    constructor(props) {
      super(props);
-     this.state = { 
-      frequency: "",
+     this.state = {
+      markudi: {},
+      starPipe: {},
+      quantum: {},
+      kamSteel: {},
+      ikorodu1: {},
+      ikorodu2: {},
+      phoenix: {},
+      sagamu: {},
+      pulkitSteel: {},
+      africanFoundriesLimited: {},
+      sunflag: {},
+      topSteel: {},
+      monarch: {},
+      larfarge: {},
       afamIv_vPs: {},
       shiroroPs: {},
       egbinPs: {},
@@ -49,11 +63,15 @@ import get_stations from "./stations_adder";
      };
    }
    componentDidMount() {
-    if(this.props.history.location.pathname === "/nccnaspagetwo") {
+    if(this.props.history.location.pathname === "/gridpagetwo") {
       socket.on("client_message_111", data => {
         const { message } = data;
-        const parsedMessage = JSON.parse(message);
-        const station = parsedMessage.id;
+        let parsedMessage = {};
+        try {
+          parsedMessage = JSON.parse(message);
+        } catch(e) {}        
+        parsedMessage.server_time = (new Date()).getTime();
+        const station = parsedMessage.name ? parsedMessage.name : parsedMessage.id ? parsedMessage.id : null;
         const returnObject = {}
         // console.log(parsedMessage, 'c1 message');
         this.setState(prevState => {
@@ -64,8 +82,12 @@ import get_stations from "./stations_adder";
       });
       socket.on("client_message_222", data => {
         const { message } = data;
-        const parsedMessage = JSON.parse(message);
-        const station = parsedMessage.id;
+        let parsedMessage = {};
+        try {
+          parsedMessage = JSON.parse(message);
+        } catch(e) {}
+        parsedMessage.server_time = (new Date()).getTime();
+        const station = parsedMessage.name ? parsedMessage.name : parsedMessage.id ? parsedMessage.id : null;
         const returnObject = {}
         // console.log(parsedMessage, 'c2 message');
         this.setState(prevState => {
@@ -74,20 +96,10 @@ import get_stations from "./stations_adder";
           return returnObject;
         })
       });
-      socket.on("frequency000", data => {
-        const { message } = data;
-        const parsedMessage = JSON.parse(message);
-        const returnObject = {}
-        this.setState(prevState => {
-          prevState["frequency"] = parsedMessage;
-          returnObject["frequency"] = prevState["frequency"]
-          return returnObject;
-        })
-      });
     }
    }
    getEpoch(time) {
-    if(!time || time == undefined || time == null) {
+    if(!time || time === undefined || time === null) {
       return 0;
     }
     // Convert the time input to epoch time
@@ -100,22 +112,22 @@ import get_stations from "./stations_adder";
     const dateTemp = date.split('-');
     return new Date(Number(dateTemp[0]), Number(dateTemp[1]-1), Number(dateTemp[2]), Number(hour), Number(minute), Number(seconds)); 
    }
-   checkConnection2(time) {
+   checkConnection2(server_time) {
     const connected = <span className="text-success"> CN </span>
     const disconnected = <span className="text-danger"> NC </span>
-    if (time === undefined || time === null) {
+    if (server_time === undefined || server_time === null) {
       return disconnected
     }
     try {
       // Get current epoch time
       const time_now = (new Date()).getTime();     
-      // if 5 minutes have passed without the time changing from the current time then return disconnected
-      // 5 minutes equals to 300,000 milliseconds
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
       // if the time difference is greater than time_diff then return disconnected
-      const time_diff = (time_now - this.getEpoch(time)) > 300000;
-      if (time.length === 0 || time_diff ) {
+      const time_diff = (time_now - server_time) > 30000;
+      if (server_time.length === 0 || time_diff ) {
           return disconnected
-      } else if (time.length > 0) {
+      } else if (!isNaN(server_time)) {
           return connected
       }
     } catch(e) {
@@ -134,18 +146,16 @@ import get_stations from "./stations_adder";
       t2 = t2 ? t2 : '';
       // Get current epoch time
       const time_now = (new Date()).getTime();
-      // if 5 minutes have passed without the time changing from the current time then return disconnected
-      // 5 minutes equals to 300,000 milliseconds
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
       // if the time difference is greater than time_diff then return disconnected
-      const time_diff_1 = (time_now - this.getEpoch(t1)) > 300000;
-      const time_diff_2 = (time_now - this.getEpoch(t2)) > 300000;
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
       if ( time_diff_1 || time_diff_2 ) {
         return disconnected
-      } else if (t1.length > 0 && t2.length > 0) {
+      } else if (!isNaN(t1) && !isNaN(t2)) {
           return connected
-      } else {
-        return disconnected;
-      }
+      } 
     } catch(e) {
       console.log(e);
       return disconnected;
@@ -163,25 +173,54 @@ import get_stations from "./stations_adder";
       t3 = t3 ? t3 : '';
       // Get current epoch time
       const time_now = (new Date()).getTime();  
-      // if 5 minutes have passed without the time changing from the current time then return disconnected
-      // 5 minutes equals to 300,000 milliseconds
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
       // if the time difference is greater than time_diff then return disconnected
-      const time_diff_1 = (time_now - this.getEpoch(t1)) > 300000;
-      const time_diff_2 = (time_now - this.getEpoch(t2)) > 300000;
-      const time_diff_3 = (time_now - this.getEpoch(t3)) > 300000;
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
+      const time_diff_3 = (time_now - t3) > 30000;
       if ( time_diff_1 || time_diff_2 || time_diff_3 ) {
         return disconnected
-      } else if (t1.length > 0 && t2.length > 0 && t3.length > 0) {
+      } else if (!isNaN(t1) && !isNaN(t2) && !isNaN(t3)) {
           return connected
-      } else {
-        return disconnected;
       }
     } catch(e) {
       console.log(e);
       return disconnected;
     }    
    }
+   checkConnection3_b(t1, t2) {
+    const connected = <span className="text-success"> CN </span>
+    const disconnected = <span className="text-danger"> NC </span>
+    if ((t1 === undefined || t1 === null) && (t2 === undefined || t2 === null)) {
+      return disconnected
+    }
+    try {
+      t1 = t1 ? t1 : '';
+      t2 = t2 ? t2 : '';
+      // Get current epoch time
+      const time_now = (new Date()).getTime();
+      // if 30 seconds have passed without the time changing from the current time then return disconnected
+      // 30 seconds equals to 30,000 milliseconds
+      // if the time difference is greater than time_diff then return disconnected
+      const time_diff_1 = (time_now - t1) > 30000;
+      const time_diff_2 = (time_now - t2) > 30000;
+      if ( time_diff_1 && time_diff_2 ) {
+        return disconnected
+      } else if (!isNaN(t1) || !isNaN(t2)) {
+          return connected
+      } 
+    } catch(e) {
+      console.log(e);
+      return disconnected;
+    }    
+   }
   render() {
+    const { isLoggedIn } = this.props;
+    const token = localStorage.getItem("token");
+    if (!isLoggedIn || token === null) {
+      return <Redirect to={'/'}/>
+    }
     const stations_array = get_stations(this.state);
     const olorunsogonipp_gs = stations_array['OLORUNSOGO NIPP'];
     const ihovbor_gs = stations_array['IHOVBOR NIPP (GAS)'];
@@ -205,7 +244,7 @@ import get_stations from "./stations_adder";
     const omotosonipp_gs = stations_array['OMOTOSHO NIPP (GAS)'];
     const geregunipp_gs = stations_array['GEREGU NIPP (GAS)'];
     const azura_gs = stations_array['AZURA-EDO IPP (GAS)'];
-    const transamadi_gs = stations_array['TRANS-AMADI (GAS)'];
+    // const transamadi_gs = stations_array['TRANS-AMADI (GAS)'];
     const phMain_ts = stations_array['PORT-HARCOURT MAIN'];
     const ibom_gs = stations_array['IBOM POWER (GAS)'];
     const gbarain_gs = stations_array['GBARAIN NIPP (GAS)'];
@@ -264,98 +303,98 @@ import get_stations from "./stations_adder";
                 <tr>
                   <td>16</td>
                   <td>JEBBA (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.jebbaTs.t)}</td>
+                  <td>{this.checkConnection2(this.state.jebbaTs.server_time)}</td>
                   <td>{jebba_gs.mw}</td>
                   <td>{jebba_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>17</td>
                   <td>OLORUNSOGO (GAS)</td>
-                  <td>{this.checkConnection3(this.state.olorunsogo1.t, this.state.olorunsogoPhase1Gs.t)}</td>
+                  <td>{this.checkConnection3(this.state.olorunsogo1.server_time, this.state.olorunsogoPhase1Gs.server_time)}</td>
                   <td>{olorunsogogas_gs.mw}</td>
                   <td>{olorunsogogas_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>18</td>
                   <td>OLORUNSOGO NIPP</td>
-                  <td>{this.checkConnection3(this.state.olorunsogo1.t, this.state.olorunsogoPhase1Gs.t)}</td>
+                  <td>{this.checkConnection3(this.state.olorunsogo1.server_time, this.state.olorunsogoPhase1Gs.server_time)}</td>
                   <td>{Number(olorunsogonipp_gs.mw) <= -3 ? 0 : Number(olorunsogonipp_gs.mw)}</td>
                   <td>{olorunsogonipp_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>19</td>
                   <td>SAPELE (STEAM)</td>
-                  <td>{this.checkConnection2(this.state.sapeleNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.sapeleNippPs.server_time)}</td>
                   <td>{sapelesteam_gs.mw}</td>
                   <td>{sapelesteam_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>20</td>
                   <td>ODUKPANI NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.odukpaniNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.odukpaniNippPs.server_time)}</td>
                   <td>{odukpani_gs.mw}</td>
                   <td>{odukpani_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>21</td>
                   <td>ALAOJI NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.alaoji.t)}</td>
+                  <td>{this.checkConnection2(this.state.alaoji.server_time)}</td>
                   <td>{alaoji_gs.mw}</td>
                   <td>{alaoji_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>22</td>
                   <td>IHOVBOR NIPP (GAS)</td>
-                  <td>{this.checkConnection2(this.state.ihovborNippPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.ihovborNippPs.server_time)}</td>
                   <td>{ihovbor_gs.mw}</td>
                   <td>{ihovbor_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>23</td>
                   <td>SHIRORO (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.shiroroPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.shiroroPs.server_time)}</td>
                   <td>{shiroro_gs.mw}</td>
                   <td>{shiroro_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>24</td>
                   <td>{'AFAM IV & V (GAS)'}</td>
-                  <td>{this.checkConnection3(this.state.afamVPs.t, this.state.afamIv_vPs.t)}</td>
+                  <td>{this.checkConnection3_b(this.state.afamVPs.server_time, this.state.afamIv_vPs.server_time)}</td>
                   <td>{afam4_gs.mw}</td>
                   <td>{afam4_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>25</td>
                   <td>KAINJI (HYDRO)</td>
-                  <td>{this.checkConnection2(this.state.kainjiTs.t)}</td>
+                  <td>{this.checkConnection2(this.state.kainjiTs.server_time)}</td>
                   <td>{kainji_gs.mw}</td>
                   <td>{kainji_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>26</td>
                   <td>EGBIN (STEAM)</td>
-                  <td>{this.checkConnection2(this.state.egbinPs.t)}</td>
+                  <td>{this.checkConnection2(this.state.egbinPs.server_time)}</td>
                   <td>{egbin_gs.mw}</td>
                   <td>{egbin_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>27</td>
                   <td>OKPAI (GAS/STEAM)</td>
-                  <td>{this.checkConnection2(this.state.okpaiGs.t)}</td>
+                  <td>{this.checkConnection2(this.state.okpaiGs.server_time)}</td>
                   <td>{okpai_gs.mw}</td>
                   <td>{okpai_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>28</td>
                   <td>ZUNGERU G.S</td>
-                  <td>{this.checkConnection2(this.state.zungeru.t)}</td>
+                  <td>{this.checkConnection2(this.state.zungeru.server_time)}</td>
                   <td>{zungeru_gs.mw}</td>
                   <td>{zungeru_gs.kv}</td>
                 </tr>
                 <tr>
                   <td>29</td>
                   <td>TAOPEX G.S</td>
-                  <td>{this.checkConnection2(this.state.taopex.t)}</td>
+                  <td>{this.checkConnection2(this.state.taopex.server_time)}</td>
                   <td>{taopex_gs.mw}</td>
                   <td>{taopex_gs.kv}</td>
                 </tr>

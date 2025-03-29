@@ -36,13 +36,6 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
 ----------------------------------*/
 /* @import url("https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,900"); */
 @import url("https://fonts.googleapis.com/css2?family=Raleway&display=swap");
-body {
-  line-height: 24px;
-  font-size: 14px;
-  color: #666666;
-  font-family: "Raleway", sans-serif;
-  font-weight: 400;
-}
 
 /*----------------------------
 ---------- RESET CSS ---------
@@ -1024,10 +1017,7 @@ input::-webkit-input-placeholder {
   right: 50%;
   margin: 0 -150px 0 0;
 }
-.testimonial-thumb > div:hover {
-  opacity: 0.7;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
-}
+
 /*--------------------------------------
 ------- TESTIMONIAL AREA CSS END -------
 ---------------------------------------*/
@@ -1558,7 +1548,6 @@ h4.post-title a {
 .hero-area-single-slide p,
 .hero-area-single-slide a.appao-btn {
   opacity: 0;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }
 .hero-area-single-slide h1 {
   -webkit-transform: translateX(-140px);
@@ -1589,7 +1578,6 @@ h4.post-title a {
   -webkit-transform: translateY(0);
   transform: translateY(0);
   opacity: 1;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
 .active .hero-area-single-slide h1 {
   -webkit-transition: all 700ms linear 0s;

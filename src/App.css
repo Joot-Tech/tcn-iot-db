@@ -5,6 +5,11 @@ Author: Tos4christ
 Description: Responsive HTML5 / CSS3 One-page Landing App Template.
 */
 
+/* 
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");
+ */
+
+
 /* General CSS RULES */
 .container-fluid {
     height: max-content;
@@ -12,12 +17,39 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
 
 .App {
     text-align: center;
-  }
+}
   
-  .App-logo {
+.App-logo {
     height: 40vmin;
     pointer-events: none;
+}
+
+/* This is the Modal container and div settings */
+.ncc-menu, .bl-menu, .menu {
+    width: 95vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-family: "Nunito", sans-serif;
   }
+
+.li_table span {
+    display: inline-block;
+    width: 8vw;
+}
+
+.ncc-menu .openModalBtn, .bl-menu .openModalBtn, .menu .openModalBtn {
+    width: 200px;
+    height: 40px;
+    border: none;
+    border-radius: 6px;
+    background-color: cornflowerblue;
+    color: white;
+    cursor: pointer;
+  }
+
+  /* The Modal settings ends here */
   
   @media (prefers-reduced-motion: no-preference) {
     .App-logo {
@@ -60,6 +92,34 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
 /* Weather API */
 /* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
 @media screen and (max-width: 768px) {
+    /* This is the Modal container and div settings */
+    .ncc-menu, .bl-menu, .menu {
+        width: 95vw;
+        height: 90vh;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        font-family: "Nunito", sans-serif;
+    }
+    .li_table span {
+        display: block;
+        width: 8vw;
+    }
+
+    .ncc-menu .openModalBtn, .bl-menu .openModalBtn, .menu .openModalBtn {
+        width: 80px;
+        height: 30px;
+        border: none;
+        border-radius: 6px;
+        background-color: cornflowerblue;
+        color: white;
+        cursor: pointer;
+    }
+
+  /* The Modal settings ends here */
+    .ncc-menu, .bl-menu {
+        width: 62em;
+    }
     .item-divs {
         margin: 0;
         padding: 0;
@@ -84,17 +144,6 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
     .weather_h3 {
         font-style: oblique;
         text-decoration: underline;
-    }
-    .weather_ul {
-        padding: 0;
-        margin: 0;
-    }
-    .weather_ul li {
-        padding: 0;
-        margin: 0;
-        font-family: serif;
-        text-transform:uppercase;
-        font-size: smaller;
     }
     .weather_widget_row {
         display: flex;
@@ -166,9 +215,15 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
         padding: 1em;
         text-align: center;
     }
+    .trim {
+        text-wrap: nowrap;
+    }
     .dashboard button{
-        margin: 1em;
-        padding: 1em;
+        margin: 0.5em;
+        padding: 0.5em;
+    }
+    .dashboard h2 {
+        color: white;
     }
     .weather_h3 {
         font-style: oblique;
@@ -179,10 +234,26 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
         margin: 0;
     }
     .weather_ul li {
+        display: flex;
         padding: 0;
         font-family: serif;
         text-transform:uppercase;
-        font-size: small;
+    }
+    .first-li {
+        flex-grow: 3;
+        padding: 0;
+        font-family: serif;
+        text-transform:uppercase;
+        font-size: large;
+        width: 2em;
+    }
+    .second-li {
+        flex-grow: 2;
+        padding: 0;
+        font-family: serif;
+        text-transform:uppercase;
+        font-size: large;
+        width: 4em;
     }
     .weather_widget_row {
         display: flex;
@@ -236,6 +307,9 @@ Description: Responsive HTML5 / CSS3 One-page Landing App Template.
     }
 }
 
+/* Weather Styling */
+
+
 .current form {
 margin: 1em 0 0 10em;
 padding: 2em;
@@ -277,9 +351,6 @@ font-weight: 500;
 .text_date {
     font-size: small;
 }
-
-
-
 
 .tem input, .report input {
     width: 8em;
@@ -431,6 +502,164 @@ table.history-tg thead tr th:nth-of-type(7), table.history-tg tbody tr td:nth-of
 }
 table.history-tg thead tr th:nth-of-type(8), table.history-tg tbody tr td:nth-of-type(8) {
     width: 8em;
+}
+
+
+/*----------------------------
+---------- BILATERAL TABLE CSS ---------
+----------------------------*/
+.bl-menu {
+    margin: 0;
+}
+.bl-menu-list {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+    /* background-image: url('./11.jpg'); */
+}
+.bl-counter-div {
+    flex-grow: 1;
+    margin-top: 38em;
+}
+.bl-counter-div-2 {
+    flex-grow: 1;
+    margin-top: 31.5em;
+}
+.bl-display-div {
+    flex-grow: 3;
+    margin: 1em 0 2em 15em;
+    padding: 0;
+}
+.bl-display-div table {
+    margin: 1em 1em 1em 1em;
+    width: 100%;
+    padding: 0;
+}
+.bl-display-div h2 {
+    margin: 10px;
+    text-align: center;
+}
+
+table.bl-tg thead, table.bl-tg tbody {
+    display: block;
+    width: 100%;
+}
+table.bl-tg tr {
+    display: flex;
+    width: 100%;
+}
+table.bl-tg td, table.bl-tg th {
+    display: inline;
+    flex-wrap: nowrap;
+    text-align: justify;
+}
+table.bl-tg thead tr th:nth-of-type(1), table.bl-tg tbody tr td:nth-of-type(1) {
+    width: 4em;
+    font-size: 25px;
+    background-color:rgb(204, 199, 199);
+}
+table.bl-tg thead tr th:nth-of-type(2), table.bl-tg tbody tr td:nth-of-type(2) {
+    width: 14em;
+    font-size: 25px;
+    background-color:rgb(204, 199, 199);
+}
+table.bl-tg thead tr th:nth-of-type(3), table.bl-tg tbody tr td:nth-of-type(3) {
+    width: 5em;
+    font-size: 25px;
+    background-color:rgb(204, 199, 199);
+}
+table.bl-tg thead tr th:nth-of-type(4), table.bl-tg tbody tr td:nth-of-type(4) {
+    width: 8em;
+    font-size: 25px;
+    background-color:rgb(204, 199, 199);
+    text-align: center;
+}
+table.bl-tg thead tr th:nth-of-type(5), table.bl-tg tbody tr td:nth-of-type(5) {
+    width: 8em;
+    font-size: 25px;
+    background-color:rgb(204, 199, 199);
+}
+table.bl-tg tbody tr td:nth-of-type(1) {
+    color: blue;
+}
+table.bl-tg tbody tr td:nth-of-type(2), table.bl-tg tbody tr td:nth-of-type(3), table.bl-tg tbody tr td:nth-of-type(4) {
+    font-weight: 600;
+}
+table.bl-tg tbody tr td:nth-of-type(5) {
+    color: red;
+}
+.bl-text-white {
+    color: aliceblue;
+    padding: 0 0 5px 0;
+    margin: 0 0 5px 0;
+}
+table.bl-tg th{
+    border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    overflow:hidden;padding:0px 0px;word-break:normal; color: blue;text-align: start;
+}
+table.bl-tg td {
+    border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    overflow:hidden;padding:0px 0px;word-break:normal;text-align: start;
+}
+table.bl-tg table.bl-tg-zb4j{
+    font-family:"Courier New", Courier, monospace !important;;
+    padding: 5px;
+    word-wrap: break-word;
+    text-align: center;
+}
+
+.bl-counter-tg th{
+    border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    overflow:hidden;padding:0px 0px;word-break:normal; color: blue;text-align: start;
+}
+.bl-counter-tg td {
+    border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+    overflow:hidden;padding:0px 0px;word-break:normal;text-align: center;
+}
+.bl-counter-tg .bl-counter-tg-zb4j{
+    font-family:"Courier New", Courier, monospace !important;;
+    padding: 5px;
+    word-wrap: break-word;
+    text-align: start;
+}
+
+table.bl-counter-tg tbody tr td:nth-of-type(1) {
+    width: 4em;
+    font-size: large;
+    background-color:rgb(204, 199, 199);
+}
+table.bl-counter-tg tbody tr td:nth-of-type(2) {
+    width: 8em;
+    font-size: large;
+    background-color:rgb(204, 199, 199);
+    color: black;
+    font-weight: 600;
+}
+table.bl-counter-tg tbody tr:nth-child(1) td:nth-child(1) {    
+    font-size: large;
+    color: green;
+}
+table.bl-counter-tg tbody tr:nth-child(2) td:nth-child(1), table.bl-counter-tg tbody tr:nth-child(3) td:nth-child(1) {    
+    font-size: large;
+    color: red;
+}
+table.bl-counter-tg tbody tr:nth-child(2) td:nth-child(2) {    
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+table.bl-counter-tg thead tr th:nth-of-type(1) {
+ width: 0;
+ margin: 0;
+ padding: 0;
+ border: none;
+}
+table.bl-counter-tg thead tr th:nth-of-type(2) {
+    width: 100%;
+    color: black;
+    font-size: large;
+    text-align: start;
+    padding: 0.4em 1em;
 }
 
 /*----------------------------
@@ -623,7 +852,7 @@ height: 50px;
 text-align: left;
 font-size: 25px;
 color: aliceblue;
-width: 70%;
+width: 80%;
 padding-left: 4em;
 margin-left: 10em;
 margin-top: 1em;
@@ -646,103 +875,113 @@ font-size:large;
 }
 }
 @media screen and (max-width: 768px) {
-.App {
-    width: 130%;
-    height: 300vh;
-    overflow: scroll;
-} 
-.nav-containers {
-    display: flex;
-    flex-direction: row;
-    background-color: #666;
-    overflow: visible;
-}
-.nav-container {
-    display: flex;
-    flex-direction: row;
-    width: auto;
-    height: auto;
-    margin: 0;
-    padding: 0;
-}
-.navbar-body {
-    flex-grow: 5;
-    margin: 0;
-    padding: 0;
-}
-.navbar-header {
-    flex-grow: 2;
-}
-.nav-link {
-    padding: 0;
-    margin: 0;
-}
-.nav-item {
-    padding: 0;
-    margin: 0;
-}
-.navbar-header {
-    padding: 0;
-    flex-grow: 2;
-    margin: 0;
-}
-.nav-container li:nth-of-type(6) {
-    width: 6em;
-    float: right;
-    padding: 0;
-}
-.message {
-    width: max-content;
-    text-align: end;
-    margin-left: 40px; 
-}
-.text-white {
-    width: max-content;
-    color: aliceblue;
-    padding: 0 0 5px 20px;
-    margin: 0 0 5px 20px;
+    .App {
+        width: 130%;
+        height: 300vh;
+        overflow: scroll;
+        background-image: url('/public/tcn-nas-background.jpeg');
     }
-.menu-list {
-    display: flex;
-    flex-direction: row;
-}
-.ul-menu {    
-    flex-grow: 10;    
-    align-items: center;
-    padding: 0;
-    width: 120%;
-    margin: 20px;
+    .mesl_background {
+        background-image: url('/src/assets/img/mesl/mesl_background.png');
     }
-.ul-menu li {
-    display: block;
-    padding: 5px;
-    background-color: aqua;
-    margin: 10px;
-    width: 100%;
-    border-radius: 10px;
-    font-size:large;
-}
-.ul-menu li a {
+    .nav-containers {
+        display: flex;
+        flex-direction: row;
+        background-color: #666;
+        overflow: visible;
+    }
+    .nav-container {
+        display: flex;
+        flex-direction: row;
+        width: auto;
+        height: auto;
+        margin: 0;
+        padding: 0;
+    }
+    .navbar-body {
+        flex-grow: 5;
+        margin: 0;
+        padding: 0;
+    }
+    .navbar-header {
+        flex-grow: 2;
+    }
+    .nav-link {
+        padding: 0;
+        margin: 0;
+    }
+    .nav-item {
+        padding: 0;
+        margin: 0;
+    }
+    .navbar-header {
+        padding: 0;
+        flex-grow: 2;
+        margin: 0;
+    }
+    .nav-container li:nth-of-type(6) {
+        width: 6em;
+        float: right;
+        padding: 0;
+    }
+    .message {
+        width: max-content;
+        text-align: end;
+        margin-left: 40px; 
+    }
+    .text-white {
+        width: max-content;
+        color: aliceblue;
+        padding: 0 0 5px 20px;
+        margin: 0 0 5px 20px;
+        }
+    .menu-list {
+        display: flex;
+        flex-direction: row;
+    }
+    .ul-menu {    
+        flex-grow: 10;    
+        align-items: center;
+        padding: 0;
+        width: 120%;
+        margin: 20px;
+        }
+    .ul-menu li {
+        display: block;
+        padding: 5px;
+        background-color: aqua;
+        margin: 10px;
+        width: 100%;
+        border-radius: 10px;
+        font-size:large;
+    }
+    .ul-menu li a {
+        padding: 0;
+        margin: 0;
+        width: 120%;
+    }
+    .display-div {
+    flex-grow: 4;
+    margin: 0;
     padding: 0;
-    margin: 0;
-    width: 120%;
+    background-color:#232323;
+    }
+    .display-div table {
+        margin: 0;
+    }
+    .display-div h2 {
+        margin: 10px;
+        text-align: center;
+    }
+    .counter-div {
+        flex-grow: 2;
+    }
 }
-.display-div {
-flex-grow: 4;
-margin: 0;
-padding: 0;
-background-color:#232323;
-}
-.display-div table {
-    margin: 0;
-}
-.display-div h2 {
-    margin: 10px;
-    text-align: center;
-}
-.counter-div {
-    flex-grow: 2;
-}
+
+.freq_font {
+    color: darkblue;
+    font-size: 42px;
+    font-weight: bolder;
 }
 
 .App {  
@@ -754,6 +993,9 @@ background-attachment: fixed;
 height:300vh;
 /* overflow: scroll; */
 /* Add the blur effect */
+}
+.mesl_background {
+    background-image: url('/src/assets/img/mesl/mesl_background.png');
 }
 .responders-bg {
 /* background-color: #fff; */
